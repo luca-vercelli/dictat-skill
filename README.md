@@ -6,8 +6,8 @@ After enabled "dictation mode", all text will be sent to the active application.
 
 ## Examples
 * "Begin dictation"
-* "Stop dictating"
 * "Take me home country roads"
+* "Stop dictating"
 
 ## Credits
 Luca Vercelli
