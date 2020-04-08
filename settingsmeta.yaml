@@ -2,7 +2,7 @@
 skillMetadata:
   sections:
     - name: Settings
-#      fields:
+      fields:
 #        - name: internal_python_variable_name
 #          type: text
 #          label: Setting Friendly Display Name
