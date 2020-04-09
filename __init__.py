@@ -9,9 +9,9 @@ from mycroft.skills.common_play_skill import CommonPlaySkill, CPSMatchLevel
 # Conflicting intents: Timer Skill "inizia a parlare" / "inizia un dettato"
 #
 
-class Dictat(CommonPlaySkill):
+class Dictat(MycroftSkill):
     def __init__(self):
-        CommonPlaySkill.__init__(self)
+        MycroftSkill.__init__(self)
         self.dictating = False
 
     @intent_file_handler('dictat.start.intent')
@@ -47,28 +47,43 @@ class Dictat(CommonPlaySkill):
             self.dictating = False
             self.speak_dialog('dictat.stop')
 
+    def converse(self, utterances, lang="en-us"):
+        # see https://github.com/JarbasAl/skill-dictation/blob/master/__init__.py
+        self.log.info("Here converse()")
+        if self.dictating:
+            # keep intents working without dictation keyword being needed
+            self.set_context("DoingDictation")
+            #if self.check_for_intent(utterances[0]):
+            #    return False
+            #else:
+            self.speak("", expect_response=True)
+            self.log.info("Dictating (via converse): " + utterances[0])
+            #TODO self.type_text(utterances[0])
+            return True
+
     def type_text(text):
         os.system("xvkbd", "--text", text)
 
-    def CPS_match_query_phrase(self, phrase):
-        self.log.info("Here CPS_match_query_phrase")
-        if self.dictating:
-            # shouldnt be here 
-            return(phrase, CPSMatchLevel.EXACT)
-        elif phrase == "dictate" or phrase == "dictating": #BLEAH
-            return(phrase, CPSMatchLevel.EXACT)
-        else:
-            return None
-
-    def CPS_start(self, phrase, data):
-        self.log.info("Here CPS_start")
-        if self.dictating:
-            # shouldnt be here 
-            # TODO self.type_text(phrase)
-            self.log.info("Dictating: " + str(phrase))
-        else:
-            self.dictating = True
-            self.set_context('DoingDictation')
+# if this were a CommonPlaySkill:
+#
+#    def CPS_match_query_phrase(self, phrase):
+#        self.log.info("Here CPS_match_query_phrase")
+#        if self.dictating:
+#            # shouldnt be here 
+#            return(phrase, CPSMatchLevel.EXACT)
+#        elif phrase == "dictate" or phrase == "dictating": #BLEAH
+#            return(phrase, CPSMatchLevel.EXACT)
+#        else:
+#            return None
+#
+#    def CPS_start(self, phrase, data):
+#        self.log.info("Here CPS_start")
+#        if self.dictating:
+#            self.type_text(phrase)
+#            self.log.info("Dictating: " + str(phrase))
+#        else:
+#            self.dictating = True
+#            self.set_context('DoingDictation')
 
 def create_skill():
     return Dictat()
