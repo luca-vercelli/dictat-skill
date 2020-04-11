@@ -15,7 +15,8 @@ class Dictat(MycroftSkill):
         MycroftSkill.__init__(self)
         self.dictating = False
 
-    @intent_file_handler('dictat.start.intent')
+    #@intent_file_handler('dictat.start.intent')
+    @intent_handler(IntentBuilder('StartDictationIntent').require('StartKeyword').require('DictationKeyword'))
     @adds_context('DoingDictation')
     def start_dictation(self, message):
         self.log.info("Here start_dictation")
@@ -25,7 +26,8 @@ class Dictat(MycroftSkill):
         for (name, _) in self.intent_service:
             self.log.info("name=" + str(name))
 
-    @intent_file_handler('dictat.stop.intent')
+    #@intent_file_handler('dictat.stop.intent')
+    @intent_handler(IntentBuilder('StopDictationIntent').require('StopKeyword').require('DictationKeyword'))
     @removes_context('DoingDictation')
     def stop_dictation(self, message):
         self.log.info("Here stop_dictation")
@@ -54,10 +56,10 @@ class Dictat(MycroftSkill):
         if self.dictating:
             if utterances:
                 # keep intents working without dictation keyword being needed
-                self.set_context("DoingDictation")
-                #if self.check_for_intent(utterances[0]):
-                #    return False
-                #else:
+                self.set_context('DoingDictation')
+                if self.voc_matches('StopKeyword'):
+                    return False
+                    # the stop_dictation() or stop() handlers should be triggered
                 self.log.info("Dictating (via converse): " + utterances[0])
                 self.type_text(utterances[0])
             self.speak("", expect_response=True)
@@ -65,7 +67,7 @@ class Dictat(MycroftSkill):
 
     def type_text(self, text):
         if text:
-            os.system('xvkbd --text "' + str(text) + '"')
+            os.system('xte "' + str(text) + '"')
 
 # if this were a CommonPlaySkill:
 #

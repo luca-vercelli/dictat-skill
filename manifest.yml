@@ -14,10 +14,9 @@ dependencies:
 #   # This searches for the provided executable and uses the package names
   system:
     # For simple packages, this is all that is necessary
-    all: xvkbd
-# probably this is no more maintained.
-# ubuntu: install with snap
-# arch: build via  AUR
+    all: xte
+    arch: xautomation
+# xvkbd probably this is no more maintained.
 
 #
 #     # If the package has a certain name on a different platform:
