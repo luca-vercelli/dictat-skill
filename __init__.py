@@ -3,6 +3,7 @@ from os import system
 from adapt.intent import IntentBuilder
 from mycroft.skills.context import adds_context, removes_context
 from mycroft.skills.common_play_skill import CommonPlaySkill, CPSMatchLevel
+import os
 
 
 #
@@ -19,7 +20,7 @@ class Dictat(MycroftSkill):
     def start_dictation(self, message):
         self.log.info("Here start_dictation")
         self.dictating = True
-        self.speak_dialog('dictat.start')
+        self.speak_dialog('dictat.start', expect_response=True)
         
         for (name, _) in self.intent_service:
             self.log.info("name=" + str(name))
@@ -38,7 +39,7 @@ class Dictat(MycroftSkill):
     def handle_free_text(self, message):
         self.log.info("Here handle_free_text")
         # should check for dictat.stop.intent
-        # TODO self.type_text(message)
+        self.type_text(message)
         self.log.info("Dictating: " + str(message.data["utterance"]))
 
     def stop(self):
@@ -49,20 +50,22 @@ class Dictat(MycroftSkill):
 
     def converse(self, utterances, lang="en-us"):
         # see https://github.com/JarbasAl/skill-dictation/blob/master/__init__.py
-        self.log.info("Here converse()")
+        self.log.info("Here converse() utterances=" + str(utterances) + " lang=" + str(lang))
         if self.dictating:
-            # keep intents working without dictation keyword being needed
-            self.set_context("DoingDictation")
-            #if self.check_for_intent(utterances[0]):
-            #    return False
-            #else:
+            if utterances:
+                # keep intents working without dictation keyword being needed
+                self.set_context("DoingDictation")
+                #if self.check_for_intent(utterances[0]):
+                #    return False
+                #else:
+                self.log.info("Dictating (via converse): " + utterances[0])
+                self.type_text(utterances[0])
             self.speak("", expect_response=True)
-            self.log.info("Dictating (via converse): " + utterances[0])
-            #TODO self.type_text(utterances[0])
             return True
 
-    def type_text(text):
-        os.system("xvkbd", "--text", text)
+    def type_text(self, text):
+        if text:
+            os.system('xvkbd --text "' + str(text) + '"')
 
 # if this were a CommonPlaySkill:
 #
