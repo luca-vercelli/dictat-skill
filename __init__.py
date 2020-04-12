@@ -21,7 +21,7 @@ class Dictat(MycroftSkill):
     def start_dictation(self, message):
         self.log.info("Here start_dictation")
         self.dictating = True
-        self.speak_dialog('dictat.start', expect_response=True)
+        self.speak_dialog('dictat.start', expect_response=True)   # expect_response fails with Google Voice ?!?
         
         for (name, _) in self.intent_service:
             self.log.info("name=" + str(name))
@@ -41,7 +41,7 @@ class Dictat(MycroftSkill):
     def handle_free_text(self, message):
         self.log.info("Here handle_free_text")
         # should check for dictat.stop.intent
-        self.type_text(message)
+        self.type_text(message.data["utterance"])
         self.log.info("Dictating: " + str(message.data["utterance"]))
 
     def stop(self):
@@ -55,19 +55,22 @@ class Dictat(MycroftSkill):
         self.log.info("Here converse() utterances=" + str(utterances) + " lang=" + str(lang))
         if self.dictating:
             if utterances:
+                utterance = utterances[0]
                 # keep intents working without dictation keyword being needed
                 self.set_context('DoingDictation')
-                if self.voc_matches('StopKeyword'):
-                    return False
+                if self.voc_match(utterance, 'StopKeyword', lang):
+                    #return False
                     # the stop_dictation() or stop() handlers should be triggered
-                self.log.info("Dictating (via converse): " + utterances[0])
-                self.type_text(utterances[0])
+                    self.stop_dictation(None)
+                    return True
+                self.log.info("Dictating (via converse): " + utterance)
+                self.type_text(utterance)
             self.speak("", expect_response=True)
             return True
 
     def type_text(self, text):
         if text:
-            os.system('xte "' + str(text) + '"')
+            os.system('xte "str ' + str(text) + ' "')
 
 # if this were a CommonPlaySkill:
 #
