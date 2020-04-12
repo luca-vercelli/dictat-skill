@@ -6,5 +6,4 @@
 #
 dependencies:
   system:
-    all: xte
-    pacman: xautomation
+    all: xautomation
