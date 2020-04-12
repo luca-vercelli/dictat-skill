@@ -15,7 +15,7 @@ class Dictat(MycroftSkill):
         MycroftSkill.__init__(self)
         self.dictating = False
 
-    #@intent_file_handler('dictat.start.intent')
+    @intent_file_handler('dictat.start.intent')
     @intent_handler(IntentBuilder('StartDictationIntent').require('StartKeyword').require('DictationKeyword'))
     @adds_context('DoingDictation')
     def start_dictation(self, message):
